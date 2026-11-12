@@ -39,6 +39,7 @@
             letter-spacing: 1px;
             text-transform: uppercase;
             transition: color 0.3s ease;
+            cursor: pointer;
         }
         nav a:hover, nav a.active {
             color: #ffffff;
@@ -105,21 +106,21 @@
     <header>
         <div class="logo">Mondo di Ste</div>
         <nav>
-            <a href="#" class="active">Galleria</a>
-            <a href="#">Paesaggi</a>
-            <a href="#">Fauna</a>
-            <a href="#">Macro</a>
+            <a class="active" onclick="filterGallery('all', this)">Galleria</a>
+            <a onclick="filterGallery('paesaggi', this)">Paesaggi</a>
+            <a onclick="filterGallery('fauna', this)">Fauna</a>
+            <a onclick="filterGallery('macro', this)">Macro</a>
         </nav>
     </header>
 
     <main class="gallery">
-        <div class="photo-card" onclick="openLightbox('foto/passotonale.jpg')">
+        <div class="photo-card" data-category="paesaggi" onclick="openLightbox('foto/passotonale.jpg')">
             <img src="foto/passotonale.jpg" alt="Passo Tonale" loading="lazy">
         </div>
-        <div class="photo-card" onclick="openLightbox('foto/pianta1.jpg')">
+        <div class="photo-card" data-category="macro" onclick="openLightbox('foto/pianta1.jpg')">
             <img src="foto/pianta1.jpg" alt="Dettaglio botanico" loading="lazy">
         </div>
-        <div class="photo-card" onclick="openLightbox('foto/scoiattolo1.jpg')">
+        <div class="photo-card" data-category="fauna" onclick="openLightbox('foto/scoiattolo1.jpg')">
             <img src="foto/scoiattolo1.jpg" alt="Scoiattolo" loading="lazy">
         </div>
     </main>
@@ -140,6 +141,18 @@
         }
         function closeLightbox() {
             document.getElementById('lightbox').style.display = 'none';
+        }
+        function filterGallery(category, element) {
+            document.querySelectorAll('nav a').forEach(link => link.classList.remove('active'));
+            element.classList.add('active');
+
+            document.querySelectorAll('.photo-card').forEach(card => {
+                if (category === 'all' || card.getAttribute('data-category') === category) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
         }
     </script>
 
