@@ -169,16 +169,16 @@
             });
         }
 
-        // Contatore visite con CountAPI
+        // Contatore visite corretto
         fetch('https://countapi.mileshilliard.com/hit/mondodiste-portfolio/visite')
             .then(response => response.json())
             .then(data => {
-                document.getElementById('visit-count').innerText = data.value;
+                document.getElementById('visit-count').innerText = data.result ?? data.value ?? 1;
             })
             .catch(error => {
                 document.getElementById('visit-count').innerText = "1";
             });
-    </script>
+        </script>
 
 </body>
 </html>
