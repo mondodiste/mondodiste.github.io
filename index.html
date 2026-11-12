@@ -49,7 +49,7 @@
             font-size: 1rem;
             font-style: italic;
             letter-spacing: 0.5px;
-            text-align: center; /* <-- Aggiungi questa riga */
+            text-align: center;
         }
         nav a:hover, nav a.active {
             color: #ffffff;
@@ -110,7 +110,6 @@
             object-fit: contain;
         }
     </style>
-<script data-goatcounter="https://mondodiste.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </head>
 <body>
 
@@ -141,7 +140,7 @@
     </main>
 
     <footer>
-        &copy; 2026 Mondo di Ste &mdash; Tutti i diritti riservati
+        &copy; 2026 Il Mondo di Ste &mdash; Visite: <span id="visit-count">...</span>
     </footer>
 
     <!-- Contenitore ingrandimento -->
@@ -169,6 +168,16 @@
                 }
             });
         }
+
+        // Contatore visite
+        fetch('https://api.counterapi.dev/v1/mondodiste/visite/up')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('visit-count').innerText = data.count;
+            })
+            .catch(error => {
+                document.getElementById('visit-count').innerText = "1+";
+            });
     </script>
 
 </body>
