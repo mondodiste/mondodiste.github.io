@@ -44,21 +44,20 @@
             color: #ffffff;
         }
         .gallery {
-            max-width: 1400px;
+            max-width: 1100px;
             margin: 20px auto 80px auto;
-            padding: 0 30px;
+            padding: 0 20px;
             display: flex;
             flex-direction: column;
-            gap: 50px;
+            gap: 60px;
         }
         .photo-card {
             width: 100%;
-            height: auto;
-            max-height: 55vh;
-            object-fit: cover;
-            display: block;
-            margin: 0 auto;
-            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow: hidden;
+            border-radius: 4px;
+            background-color: #161616;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            cursor: zoom-in;
         }
         .photo-card img {
             width: 100%;
