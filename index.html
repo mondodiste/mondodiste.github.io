@@ -169,16 +169,20 @@
             });
         }
 
-        // Contatore visite
+        // Contatore visite protetto
         fetch('https://api.counterapi.dev/v1/mondodiste/visite/up')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) throw new Error('Errore di rete');
+                return response.json();
+            })
             .then(data => {
                 document.getElementById('visit-count').innerText = data.count;
             })
             .catch(error => {
-                document.getElementById('visit-count').innerText = "1+";
+                // Se viene bloccato, mostra un numero di fallback discreto
+                document.getElementById('visit-count').innerText = "1";
             });
-    </script>
+        </script>
 
 </body>
 </html>
