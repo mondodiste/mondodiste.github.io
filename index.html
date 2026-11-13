@@ -86,7 +86,6 @@
             transform: scale(1.03);
         }
         
-        /* Overlay con titolo e like direttamente sulla foto */
         .photo-overlay {
             position: absolute;
             bottom: 0;
@@ -137,7 +136,6 @@
             letter-spacing: 1px;
         }
 
-        /* Lightbox */
         .lightbox {
             display: none;
             position: fixed;
@@ -181,7 +179,6 @@
         &copy; 2026 Il Mondo di Ste &mdash; Visite: <span id="busuanzi_value_site_pv">...</span>
     </footer>
 
-    <!-- Lightbox -->
     <div id="lightbox" class="lightbox" onclick="closeLightbox()">
         <img id="lightbox-img" src="" alt="Foto ingrandita">
     </div>
@@ -189,7 +186,6 @@
     <script>
         let currentCategory = 'all';
 
-        // Carica dinamicamente le foto dal file JSON
         fetch('foto.json')
             .then(response => response.json())
             .then(data => {
@@ -199,6 +195,7 @@
                 data.forEach(photo => {
                     const photoId = photo.file.replace(/\.[^/.]+$/, "");
                     const isLiked = localStorage.getItem('liked_' + photoId) ? 'liked' : '';
+                    const savedCount = localStorage.getItem('count_' + photoId) || 0;
                     
                     const html = `
                         <div class="photo-wrapper" data-category="${photo.categoria}">
@@ -207,7 +204,7 @@
                                 <div class="photo-overlay">
                                     <span class="photo-title">${photo.titolo}</span>
                                     <button class="like-btn ${isLiked}" onclick="event.stopPropagation(); toggleLike('${photoId}', this)">
-                                        ❤️ <span id="like-${photoId}">0</span>
+                                        ❤️ <span id="like-${photoId}">${savedCount}</span>
                                     </button>
                                 </div>
                             </div>
@@ -245,9 +242,11 @@
             if (!countSpan) return;
             let currentLikes = parseInt(countSpan.innerText) || 0;
             let likedKey = 'liked_' + photoId;
+            let countKey = 'count_' + photoId;
             
             if (localStorage.getItem(likedKey)) {
                 currentLikes--;
+                if (currentLikes < 0) currentLikes = 0;
                 localStorage.removeItem(likedKey);
                 btn.classList.remove('liked');
             } else {
@@ -255,11 +254,12 @@
                 localStorage.setItem(likedKey, 'true');
                 btn.classList.add('liked');
             }
+            
             countSpan.innerText = currentLikes;
+            localStorage.setItem(countKey, currentLikes);
         }
     </script>
 
-    <!-- Script contatore visite -->
     <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
 </body>
