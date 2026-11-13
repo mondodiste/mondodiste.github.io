@@ -62,57 +62,73 @@
             padding: 0 20px;
             display: flex;
             flex-direction: column;
-            gap: 60px;
-        }
-        .photo-wrapper {
-            background-color: #161616;
-            border-radius: 4px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            gap: 40px;
         }
         .photo-card {
+            position: relative;
             width: 100%;
             overflow: hidden;
+            border-radius: 6px;
+            background-color: #161616;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             cursor: zoom-in;
         }
         .photo-card img {
             width: 100%;
             height: auto;
-            max-height: 25vh;
+            max-height: 60vh;
             object-fit: cover;
             display: block;
             margin: 0 auto;
             transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .photo-card:hover img {
-            transform: scale(2.0);
+            transform: scale(1.03);
         }
-        .photo-footer {
-            padding: 12px 20px;
+        
+        /* Overlay con titolo e like direttamente sulla foto */
+        .photo-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 25px 20px 20px 20px;
+            background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 60%, transparent 100%);
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            border-top: 1px solid #222;
-            font-size: 0.9rem;
-            color: #888;
+            align-items: flex-end;
+        }
+        .photo-title {
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: 500;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.8);
         }
         .like-btn {
-            background: none;
-            border: none;
-            color: #888;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 6px 14px;
+            border-radius: 20px;
+            color: #fff;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 0.9rem;
             display: flex;
             align-items: center;
             gap: 6px;
-            transition: color 0.2s ease;
+            transition: background 0.2s ease, border-color 0.2s ease;
         }
-        .like-btn:hover, .like-btn.liked {
+        .like-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .like-btn.liked {
             color: #ff4757;
+            border-color: rgba(255, 71, 87, 0.4);
         }
         .like-btn span {
             font-weight: 600;
         }
+
         footer {
             text-align: center;
             padding: 40px 20px;
@@ -158,7 +174,6 @@
         <p>Il mio modo di fermare il tempo durante le uscite all'aria aperta: luce, montagne e incontri inaspettati.</p>
     </div>
     
-    <!-- La galleria si popolerà da sola tramite JavaScript -->
     <main class="gallery" id="gallery-container">
     </main>
 
@@ -182,7 +197,6 @@
                 container.innerHTML = '';
 
                 data.forEach(photo => {
-                    // Genera un ID sicuro basato sul nome file senza estensione
                     const photoId = photo.file.replace(/\.[^/.]+$/, "");
                     const isLiked = localStorage.getItem('liked_' + photoId) ? 'liked' : '';
                     
@@ -190,12 +204,12 @@
                         <div class="photo-wrapper" data-category="${photo.categoria}">
                             <div class="photo-card" onclick="openLightbox('foto/${photo.file}')">
                                 <img src="foto/${photo.file}" alt="${photo.titolo}" loading="lazy">
-                            </div>
-                            <div class="photo-footer">
-                                <span>${photo.titolo}</span>
-                                <button class="like-btn ${isLiked}" onclick="toggleLike('${photoId}', this)">
-                                    ❤️ <span id="like-${photoId}">0</span>
-                                </button>
+                                <div class="photo-overlay">
+                                    <span class="photo-title">${photo.titolo}</span>
+                                    <button class="like-btn ${isLiked}" onclick="event.stopPropagation(); toggleLike('${photoId}', this)">
+                                        ❤️ <span id="like-${photoId}">0</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     `;
