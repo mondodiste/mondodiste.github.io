@@ -1,0 +1,17 @@
+[
+    {
+        "file": "passotonale.jpg",
+        "categoria": "paesaggi",
+        "titolo": "Passo Tonale"
+    },
+    {
+        "file": "pianta1.jpg",
+        "categoria": "macro",
+        "titolo": "Dettaglio botanico"
+    },
+    {
+        "file": "scoiattolo1.jpg",
+        "categoria": "fauna",
+        "titolo": "Scoiattolo"
+    }
+]
