@@ -62,13 +62,12 @@
             padding: 0 20px;
             display: flex;
             flex-direction: column;
-            gap: 40px;
+            gap: 60px;
         }
         .photo-card {
-            position: relative;
             width: 100%;
             overflow: hidden;
-            border-radius: 6px;
+            border-radius: 4px;
             background-color: #161616;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             cursor: zoom-in;
@@ -76,58 +75,15 @@
         .photo-card img {
             width: 100%;
             height: auto;
-            max-height: 60vh;
+            max-height: 25vh;
             object-fit: cover;
             display: block;
             margin: 0 auto;
             transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .photo-card:hover img {
-            transform: scale(1.03);
+            transform: scale(2.0);
         }
-        
-        .photo-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 25px 20px 20px 20px;
-            background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 60%, transparent 100%);
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-        }
-        .photo-title {
-            color: #ffffff;
-            font-size: 1rem;
-            font-weight: 500;
-            text-shadow: 0 1px 4px rgba(0,0,0,0.8);
-        }
-        .like-btn {
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(6px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            padding: 6px 14px;
-            border-radius: 20px;
-            color: #fff;
-            cursor: pointer;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: background 0.2s ease, border-color 0.2s ease;
-        }
-        .like-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-        .like-btn.liked {
-            color: #ff4757;
-            border-color: rgba(255, 71, 87, 0.4);
-        }
-        .like-btn span {
-            font-weight: 600;
-        }
-
         footer {
             text-align: center;
             padding: 40px 20px;
@@ -136,6 +92,7 @@
             letter-spacing: 1px;
         }
 
+        /* Lightbox per visualizzazione a schermo intero */
         .lightbox {
             display: none;
             position: fixed;
@@ -172,62 +129,28 @@
         <p>Il mio modo di fermare il tempo durante le uscite all'aria aperta: luce, montagne e incontri inaspettati.</p>
     </div>
     
-    <main class="gallery" id="gallery-container">
+    <main class="gallery">
+        <div class="photo-card" data-category="paesaggi" onclick="openLightbox('foto/passotonale.jpg')">
+            <img src="foto/passotonale.jpg" alt="Passo Tonale" loading="lazy">
+        </div>
+        <div class="photo-card" data-category="macro" onclick="openLightbox('foto/pianta1.jpg')">
+            <img src="foto/pianta1.jpg" alt="Dettaglio botanico" loading="lazy">
+        </div>
+        <div class="photo-card" data-category="fauna" onclick="openLightbox('foto/scoiattolo1.jpg')">
+            <img src="foto/scoiattolo1.jpg" alt="Scoiattolo" loading="lazy">
+        </div>
     </main>
 
     <footer>
         &copy; 2026 Il Mondo di Ste &mdash; Visite: <span id="busuanzi_value_site_pv">...</span>
     </footer>
 
+    <!-- Contenitore ingrandimento -->
     <div id="lightbox" class="lightbox" onclick="closeLightbox()">
         <img id="lightbox-img" src="" alt="Foto ingrandita">
     </div>
 
     <script>
-        let currentCategory = 'all';
-
-        // Carica dinamicamente le foto e i contatori globali da CounterAPI
-        fetch('foto.json')
-            .then(response => response.json())
-            .then(data => {
-                const container = document.getElementById('gallery-container');
-                container.innerHTML = '';
-
-                data.forEach(photo => {
-                    const photoId = photo.file.replace(/\.[^/.]+$/, "");
-                    const isLiked = localStorage.getItem('liked_' + photoId) ? 'liked' : '';
-                    
-                    // HTML iniziale con placeholder
-                    const html = `
-                        <div class="photo-wrapper" data-category="${photo.categoria}">
-                            <div class="photo-card" onclick="openLightbox('foto/${photo.file}')">
-                                <img src="foto/${photo.file}" alt="${photo.titolo}" loading="lazy">
-                                <div class="photo-overlay">
-                                    <span class="photo-title">${photo.titolo}</span>
-                                    <button class="like-btn ${isLiked}" onclick="event.stopPropagation(); toggleLike('${photoId}', this)">
-                                        ❤️ <span id="like-${photoId}">...</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    container.innerHTML += html;
-
-                    // Recupera il valore globale dal server cloud
-                    fetch(`https://api.counterapi.dev/v1/mondodiste-portfolio/${photoId}`)
-                        .then(res => res.json())
-                        .then(apiData => {
-                            const countSpan = document.getElementById('like-' + photoId);
-                            if (countSpan) countSpan.innerText = apiData.count ?? 0;
-                        })
-                        .catch(() => {
-                            const countSpan = document.getElementById('like-' + photoId);
-                            if (countSpan) countSpan.innerText = 0;
-                        });
-                });
-            })
-            .catch(err => console.error('Errore nel caricamento delle foto:', err));
-
         function openLightbox(src) {
             document.getElementById('lightbox-img').src = src;
             document.getElementById('lightbox').style.display = 'flex';
@@ -235,13 +158,11 @@
         function closeLightbox() {
             document.getElementById('lightbox').style.display = 'none';
         }
-
         function filterGallery(category, element) {
-            currentCategory = category;
             document.querySelectorAll('nav a').forEach(link => link.classList.remove('active'));
             element.classList.add('active');
 
-            document.querySelectorAll('.photo-wrapper').forEach(card => {
+            document.querySelectorAll('.photo-card').forEach(card => {
                 if (category === 'all' || card.getAttribute('data-category') === category) {
                     card.style.display = 'block';
                 } else {
@@ -249,43 +170,9 @@
                 }
             });
         }
-
-        function toggleLike(photoId, btn) {
-            let countSpan = document.getElementById('like-' + photoId);
-            if (!countSpan) return;
-            let currentLikes = parseInt(countSpan.innerText) || 0;
-            let likedKey = 'liked_' + photoId;
-            
-            let action = '';
-            if (localStorage.getItem(likedKey)) {
-                // Togli il like
-                action = 'down';
-                currentLikes--;
-                if (currentLikes < 0) currentLikes = 0;
-                localStorage.removeItem(likedKey);
-                btn.classList.remove('liked');
-            } else {
-                // Metti il like
-                action = 'up';
-                currentLikes++;
-                localStorage.setItem(likedKey, 'true');
-                btn.classList.add('liked');
-            }
-            
-            countSpan.innerText = currentLikes;
-
-            // Invia l'aggiornamento globale al cloud
-            fetch(`https://api.counterapi.dev/v1/mondodiste-portfolio/${photoId}/${action}`)
-                .then(res => res.json())
-                .then(apiData => {
-                    if (apiData.count !== undefined) {
-                        countSpan.innerText = apiData.count;
-                    }
-                })
-                .catch(err => console.error('Errore di sincronizzazione like:', err));
-        }
     </script>
 
+    <!-- Script contatore visite -->
     <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
 </body>
