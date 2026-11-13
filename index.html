@@ -54,7 +54,6 @@
         nav a:hover, nav a.active {
             color: #ffffff;
         }
-        /* Pulsante Contatti separato e stilizzato */
         .nav-contact {
             border: 1px solid #333;
             border-radius: 4px;
@@ -134,7 +133,7 @@
             text-transform: uppercase;
         }
 
-        /* Lightbox ottimizzato con download */
+        /* Lightbox fixata a schermo intero */
         .lightbox {
             display: none;
             position: fixed;
@@ -146,24 +145,24 @@
             background-color: rgba(0, 0, 0, 0.96);
             justify-content: center;
             align-items: center;
-            flex-direction: column;
             padding: 20px;
         }
         .lightbox-content {
             display: flex;
             flex-direction: column;
             align-items: center;
-            max-width: 90vw;
-            max-height: 85vh;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
         }
         .lightbox img {
             max-width: 95vw;
-            max-height: 88vh; /* <-- Più grande, riempie quasi tutto lo schermo */
+            max-height: 84vh;
             object-fit: contain;
-            border-radius: 6px;
+            border-radius: 4px;
         }
         .download-btn {
-            margin-top: 18px;
+            margin-top: 15px;
             background-color: transparent;
             border: 1px solid #444;
             color: #ccc;
@@ -343,7 +342,6 @@
     </div>
 
     <script>
-        // Caricamento dinamico delle foto da foto.json
         fetch('foto.json')
             .then(response => response.json())
             .then(data => {
@@ -373,7 +371,6 @@
             img.src = src;
             downloadBtn.href = src;
             
-            // Suggerisce un nome file pulito per il download basato sul titolo
             const safeName = title ? title.toLowerCase().replace(/[^a-z0-9]/g, '_') + '.jpg' : 'sfondo_ste.jpg';
             downloadBtn.setAttribute('download', safeName);
 
@@ -399,7 +396,6 @@
             });
         }
 
-        // Gestione Modale Contatti
         function openContactModal() {
             document.getElementById('contact-modal').style.display = 'flex';
             document.getElementById('form-status').textContent = '';
@@ -415,7 +411,6 @@
             }
         }
 
-        // Invio asincrono tramite Formspree
         const form = document.getElementById('contact-form');
         form.addEventListener('submit', async function(event) {
             event.preventDefault();
