@@ -142,7 +142,7 @@
     </main>
 
     <footer>
-        &copy; 2026 Il Mondo di Ste &mdash; Visite: <span id="visit-count">...</span>
+        &copy; 2026 Il Mondo di Ste &mdash; Visite: <span id="busuanzi_value_site_pv">...</span>
     </footer>
 
     <!-- Contenitore ingrandimento -->
@@ -170,17 +170,10 @@
                 }
             });
         }
+    </script>
 
-        // Contatore visite corretto
-        fetch('https://countapi.mileshilliard.com/hit/mondodiste-portfolio/visite')
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('visit-count').innerText = data.result ?? data.value ?? 1;
-            })
-            .catch(error => {
-                document.getElementById('visit-count').innerText = "1";
-            });
-        </script>
+    <!-- Script contatore visite -->
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
 </body>
 </html>
