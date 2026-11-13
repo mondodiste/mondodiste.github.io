@@ -90,7 +90,7 @@
             position: relative;
             width: 100%;
             overflow: hidden;
-            border-radius: 8px;
+            border-radius: 24px;
             background-color: #141414;
             box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
             cursor: zoom-in;
@@ -106,7 +106,7 @@
             transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .photo-card:hover img {
-            transform: scale(1.025);
+            transform: scale(1.2); /* Riportato a 1.2 come richiesto */
         }
         
         .photo-overlay {
@@ -114,7 +114,7 @@
             bottom: 0;
             left: 0;
             right: 0;
-            padding: 30px 20px 20px 20px;
+            padding: 30px 25px 20px 25px;
             background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 60%, transparent 100%);
         }
         .photo-title {
@@ -170,7 +170,7 @@
         .modal-content {
             background-color: #141414;
             border: 1px solid #2a2a2a;
-            border-radius: 8px;
+            border-radius: 12px;
             padding: 35px;
             width: 100%;
             max-width: 480px;
@@ -214,7 +214,7 @@
             width: 100%;
             background-color: #0c0c0c;
             border: 1px solid #282828;
-            border-radius: 4px;
+            border-radius: 6px;
             padding: 12px;
             color: #e0e0e0;
             font-family: inherit;
@@ -231,7 +231,7 @@
             background-color: #ffffff;
             color: #0c0c0c;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             padding: 12px;
             font-size: 0.85rem;
             font-weight: 700;
