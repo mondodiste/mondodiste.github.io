@@ -151,7 +151,7 @@
     </main>
 
     <footer>
-    &copy; 2026 Il Mondo di Ste &mdash; Visite: <span id="visit-count">...</span>
+        &copy; 2026 Il Mondo di Ste
     </footer>
 
     <div id="lightbox" class="lightbox" onclick="closeLightbox()">
@@ -203,17 +203,7 @@
                 }
             });
         }
-        <script>
-        fetch('https://api.countapi.xyz/hit/mondodiste.github.io/visits')
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('visit-count').innerText = data.value;
-        })
-        .catch(err => {
-            console.error('Errore contatore:', err);
-            document.getElementById('visit-count').innerText = 'N/D';
-        });
-        </script>
+    </script>
 
 </body>
 </html>
