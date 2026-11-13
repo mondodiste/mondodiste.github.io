@@ -134,6 +134,7 @@
             text-transform: uppercase;
         }
 
+        /* Lightbox ottimizzato con download */
         .lightbox {
             display: none;
             position: fixed;
@@ -145,12 +146,40 @@
             background-color: rgba(0, 0, 0, 0.96);
             justify-content: center;
             align-items: center;
-            cursor: zoom-out;
+            flex-direction: column;
+            padding: 20px;
+        }
+        .lightbox-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 90vw;
+            max-height: 85vh;
         }
         .lightbox img {
-            width: 100vw;
-            height: 100vh;
+            max-width: 100%;
+            max-height: 72vh;
             object-fit: contain;
+            border-radius: 6px;
+        }
+        .download-btn {
+            margin-top: 18px;
+            background-color: transparent;
+            border: 1px solid #444;
+            color: #ccc;
+            padding: 8px 20px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .download-btn:hover {
+            border-color: #fff;
+            background-color: rgba(255, 255, 255, 0.05);
+            color: #fff;
         }
 
         /* Stili Modale Contatti */
@@ -281,8 +310,12 @@
         &copy; 2026 Il Mondo di Ste
     </footer>
 
+    <!-- Lightbox con pulsante Download Sfondo -->
     <div id="lightbox" class="lightbox" onclick="closeLightbox()">
-        <img id="lightbox-img" src="" alt="Foto ingrandita">
+        <div class="lightbox-content" onclick="event.stopPropagation()">
+            <img id="lightbox-img" src="" alt="Foto ingrandita">
+            <a id="lightbox-download" href="" download class="download-btn">Scarica Sfondo</a>
+        </div>
     </div>
 
     <!-- Modale Contatti -->
@@ -320,7 +353,7 @@
                 data.forEach(photo => {
                     const html = `
                         <div class="photo-wrapper" data-category="${photo.categoria}">
-                            <div class="photo-card" onclick="openLightbox('foto/${photo.file}')">
+                            <div class="photo-card" onclick="openLightbox('foto/${photo.file}', '${photo.titolo}')">
                                 <img src="foto/${photo.file}" alt="${photo.titolo}" loading="lazy">
                                 <div class="photo-overlay">
                                     <span class="photo-title">${photo.titolo}</span>
@@ -333,8 +366,17 @@
             })
             .catch(err => console.error('Errore nel caricamento delle foto:', err));
 
-        function openLightbox(src) {
-            document.getElementById('lightbox-img').src = src;
+        function openLightbox(src, title) {
+            const img = document.getElementById('lightbox-img');
+            const downloadBtn = document.getElementById('lightbox-download');
+            
+            img.src = src;
+            downloadBtn.href = src;
+            
+            // Suggerisce un nome file pulito per il download basato sul titolo
+            const safeName = title ? title.toLowerCase().replace(/[^a-z0-9]/g, '_') + '.jpg' : 'sfondo_ste.jpg';
+            downloadBtn.setAttribute('download', safeName);
+
             document.getElementById('lightbox').style.display = 'flex';
         }
         
