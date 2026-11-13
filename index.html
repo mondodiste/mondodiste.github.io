@@ -64,12 +64,15 @@
             flex-direction: column;
             gap: 60px;
         }
+        .photo-wrapper {
+            background-color: #161616;
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
         .photo-card {
             width: 100%;
             overflow: hidden;
-            border-radius: 4px;
-            background-color: #161616;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             cursor: zoom-in;
         }
         .photo-card img {
@@ -84,6 +87,32 @@
         .photo-card:hover img {
             transform: scale(2.0);
         }
+        .photo-footer {
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #222;
+            font-size: 0.9rem;
+            color: #888;
+        }
+        .like-btn {
+            background: none;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.2s ease;
+        }
+        .like-btn:hover, .like-btn.liked {
+            color: #ff4757;
+        }
+        .like-btn span {
+            font-weight: 600;
+        }
         footer {
             text-align: center;
             padding: 40px 20px;
@@ -92,7 +121,7 @@
             letter-spacing: 1px;
         }
 
-        /* Lightbox per visualizzazione a schermo intero */
+        /* Lightbox */
         .lightbox {
             display: none;
             position: fixed;
@@ -129,28 +158,52 @@
         <p>Il mio modo di fermare il tempo durante le uscite all'aria aperta: luce, montagne e incontri inaspettati.</p>
     </div>
     
-    <main class="gallery">
-        <div class="photo-card" data-category="paesaggi" onclick="openLightbox('foto/passotonale.jpg')">
-            <img src="foto/passotonale.jpg" alt="Passo Tonale" loading="lazy">
-        </div>
-        <div class="photo-card" data-category="macro" onclick="openLightbox('foto/pianta1.jpg')">
-            <img src="foto/pianta1.jpg" alt="Dettaglio botanico" loading="lazy">
-        </div>
-        <div class="photo-card" data-category="fauna" onclick="openLightbox('foto/scoiattolo1.jpg')">
-            <img src="foto/scoiattolo1.jpg" alt="Scoiattolo" loading="lazy">
-        </div>
+    <!-- La galleria si popolerà da sola tramite JavaScript -->
+    <main class="gallery" id="gallery-container">
     </main>
 
     <footer>
         &copy; 2026 Il Mondo di Ste &mdash; Visite: <span id="busuanzi_value_site_pv">...</span>
     </footer>
 
-    <!-- Contenitore ingrandimento -->
+    <!-- Lightbox -->
     <div id="lightbox" class="lightbox" onclick="closeLightbox()">
         <img id="lightbox-img" src="" alt="Foto ingrandita">
     </div>
 
     <script>
+        let currentCategory = 'all';
+
+        // Carica dinamicamente le foto dal file JSON
+        fetch('foto.json')
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('gallery-container');
+                container.innerHTML = '';
+
+                data.forEach(photo => {
+                    // Genera un ID sicuro basato sul nome file senza estensione
+                    const photoId = photo.file.replace(/\.[^/.]+$/, "");
+                    const isLiked = localStorage.getItem('liked_' + photoId) ? 'liked' : '';
+                    
+                    const html = `
+                        <div class="photo-wrapper" data-category="${photo.categoria}">
+                            <div class="photo-card" onclick="openLightbox('foto/${photo.file}')">
+                                <img src="foto/${photo.file}" alt="${photo.titolo}" loading="lazy">
+                            </div>
+                            <div class="photo-footer">
+                                <span>${photo.titolo}</span>
+                                <button class="like-btn ${isLiked}" onclick="toggleLike('${photoId}', this)">
+                                    ❤️ <span id="like-${photoId}">0</span>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    container.innerHTML += html;
+                });
+            })
+            .catch(err => console.error('Errore nel caricamento delle foto:', err));
+
         function openLightbox(src) {
             document.getElementById('lightbox-img').src = src;
             document.getElementById('lightbox').style.display = 'flex';
@@ -158,17 +211,37 @@
         function closeLightbox() {
             document.getElementById('lightbox').style.display = 'none';
         }
+
         function filterGallery(category, element) {
+            currentCategory = category;
             document.querySelectorAll('nav a').forEach(link => link.classList.remove('active'));
             element.classList.add('active');
 
-            document.querySelectorAll('.photo-card').forEach(card => {
+            document.querySelectorAll('.photo-wrapper').forEach(card => {
                 if (category === 'all' || card.getAttribute('data-category') === category) {
                     card.style.display = 'block';
                 } else {
                     card.style.display = 'none';
                 }
             });
+        }
+
+        function toggleLike(photoId, btn) {
+            let countSpan = document.getElementById('like-' + photoId);
+            if (!countSpan) return;
+            let currentLikes = parseInt(countSpan.innerText) || 0;
+            let likedKey = 'liked_' + photoId;
+            
+            if (localStorage.getItem(likedKey)) {
+                currentLikes--;
+                localStorage.removeItem(likedKey);
+                btn.classList.remove('liked');
+            } else {
+                currentLikes++;
+                localStorage.setItem(likedKey, 'true');
+                btn.classList.add('liked');
+            }
+            countSpan.innerText = currentLikes;
         }
     </script>
 
