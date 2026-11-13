@@ -186,6 +186,7 @@
     <script>
         let currentCategory = 'all';
 
+        // Carica dinamicamente le foto e i contatori globali da CounterAPI
         fetch('foto.json')
             .then(response => response.json())
             .then(data => {
@@ -195,8 +196,8 @@
                 data.forEach(photo => {
                     const photoId = photo.file.replace(/\.[^/.]+$/, "");
                     const isLiked = localStorage.getItem('liked_' + photoId) ? 'liked' : '';
-                    const savedCount = localStorage.getItem('count_' + photoId) || 0;
                     
+                    // HTML iniziale con placeholder
                     const html = `
                         <div class="photo-wrapper" data-category="${photo.categoria}">
                             <div class="photo-card" onclick="openLightbox('foto/${photo.file}')">
@@ -204,13 +205,25 @@
                                 <div class="photo-overlay">
                                     <span class="photo-title">${photo.titolo}</span>
                                     <button class="like-btn ${isLiked}" onclick="event.stopPropagation(); toggleLike('${photoId}', this)">
-                                        ❤️ <span id="like-${photoId}">${savedCount}</span>
+                                        ❤️ <span id="like-${photoId}">...</span>
                                     </button>
                                 </div>
                             </div>
                         </div>
                     `;
                     container.innerHTML += html;
+
+                    // Recupera il valore globale dal server cloud
+                    fetch(`https://api.counterapi.dev/v1/mondodiste-portfolio/${photoId}`)
+                        .then(res => res.json())
+                        .then(apiData => {
+                            const countSpan = document.getElementById('like-' + photoId);
+                            if (countSpan) countSpan.innerText = apiData.count ?? 0;
+                        })
+                        .catch(() => {
+                            const countSpan = document.getElementById('like-' + photoId);
+                            if (countSpan) countSpan.innerText = 0;
+                        });
                 });
             })
             .catch(err => console.error('Errore nel caricamento delle foto:', err));
@@ -242,21 +255,34 @@
             if (!countSpan) return;
             let currentLikes = parseInt(countSpan.innerText) || 0;
             let likedKey = 'liked_' + photoId;
-            let countKey = 'count_' + photoId;
             
+            let action = '';
             if (localStorage.getItem(likedKey)) {
+                // Togli il like
+                action = 'down';
                 currentLikes--;
                 if (currentLikes < 0) currentLikes = 0;
                 localStorage.removeItem(likedKey);
                 btn.classList.remove('liked');
             } else {
+                // Metti il like
+                action = 'up';
                 currentLikes++;
                 localStorage.setItem(likedKey, 'true');
                 btn.classList.add('liked');
             }
             
             countSpan.innerText = currentLikes;
-            localStorage.setItem(countKey, currentLikes);
+
+            // Invia l'aggiornamento globale al cloud
+            fetch(`https://api.counterapi.dev/v1/mondodiste-portfolio/${photoId}/${action}`)
+                .then(res => res.json())
+                .then(apiData => {
+                    if (apiData.count !== undefined) {
+                        countSpan.innerText = apiData.count;
+                    }
+                })
+                .catch(err => console.error('Errore di sincronizzazione like:', err));
         }
     </script>
 
