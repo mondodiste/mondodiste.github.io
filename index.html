@@ -25,6 +25,8 @@
             align-items: center;
             max-width: 1200px;
             margin: 0 auto;
+            flex-wrap: wrap;
+            gap: 20px;
         }
         .logo {
             font-size: 1.2rem;
@@ -36,7 +38,7 @@
         nav a {
             color: #888;
             text-decoration: none;
-            margin-left: 25px;
+            margin-left: 20px;
             font-size: 0.9rem;
             letter-spacing: 1px;
             text-transform: uppercase;
@@ -62,12 +64,13 @@
             padding: 0 20px;
             display: flex;
             flex-direction: column;
-            gap: 60px;
+            gap: 40px;
         }
         .photo-card {
+            position: relative;
             width: 100%;
             overflow: hidden;
-            border-radius: 4px;
+            border-radius: 6px;
             background-color: #161616;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             cursor: zoom-in;
@@ -75,15 +78,31 @@
         .photo-card img {
             width: 100%;
             height: auto;
-            max-height: 25vh;
+            max-height: 70vh;
             object-fit: cover;
             display: block;
             margin: 0 auto;
             transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .photo-card:hover img {
-            transform: scale(2.0);
+            transform: scale(1.03);
         }
+        
+        .photo-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 25px 20px 20px 20px;
+            background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 60%, transparent 100%);
+        }
+        .photo-title {
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: 500;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+        }
+
         footer {
             text-align: center;
             padding: 40px 20px;
@@ -92,7 +111,6 @@
             letter-spacing: 1px;
         }
 
-        /* Lightbox per visualizzazione a schermo intero */
         .lightbox {
             display: none;
             position: fixed;
@@ -129,40 +147,55 @@
         <p>Il mio modo di fermare il tempo durante le uscite all'aria aperta: luce, montagne e incontri inaspettati.</p>
     </div>
     
-    <main class="gallery">
-        <div class="photo-card" data-category="paesaggi" onclick="openLightbox('foto/passotonale.jpg')">
-            <img src="foto/passotonale.jpg" alt="Passo Tonale" loading="lazy">
-        </div>
-        <div class="photo-card" data-category="macro" onclick="openLightbox('foto/pianta1.jpg')">
-            <img src="foto/pianta1.jpg" alt="Dettaglio botanico" loading="lazy">
-        </div>
-        <div class="photo-card" data-category="fauna" onclick="openLightbox('foto/scoiattolo1.jpg')">
-            <img src="foto/scoiattolo1.jpg" alt="Scoiattolo" loading="lazy">
-        </div>
+    <main class="gallery" id="gallery-container">
     </main>
 
     <footer>
         &copy; 2026 Il Mondo di Ste &mdash; Visite: <span id="busuanzi_value_site_pv">...</span>
     </footer>
 
-    <!-- Contenitore ingrandimento -->
     <div id="lightbox" class="lightbox" onclick="closeLightbox()">
         <img id="lightbox-img" src="" alt="Foto ingrandita">
     </div>
 
     <script>
+        // Caricamento dinamico delle foto da foto.json
+        fetch('foto.json')
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('gallery-container');
+                container.innerHTML = '';
+
+                data.forEach(photo => {
+                    const html = `
+                        <div class="photo-wrapper" data-category="${photo.categoria}">
+                            <div class="photo-card" onclick="openLightbox('foto/${photo.file}')">
+                                <img src="foto/${photo.file}" alt="${photo.titolo}" loading="lazy">
+                                <div class="photo-overlay">
+                                    <span class="photo-title">${photo.titolo}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    container.innerHTML += html;
+                });
+            })
+            .catch(err => console.error('Errore nel caricamento delle foto:', err));
+
         function openLightbox(src) {
             document.getElementById('lightbox-img').src = src;
             document.getElementById('lightbox').style.display = 'flex';
         }
+        
         function closeLightbox() {
             document.getElementById('lightbox').style.display = 'none';
         }
+
         function filterGallery(category, element) {
             document.querySelectorAll('nav a').forEach(link => link.classList.remove('active'));
             element.classList.add('active');
 
-            document.querySelectorAll('.photo-card').forEach(card => {
+            document.querySelectorAll('.photo-wrapper').forEach(card => {
                 if (category === 'all' || card.getAttribute('data-category') === category) {
                     card.style.display = 'block';
                 } else {
@@ -172,7 +205,6 @@
         }
     </script>
 
-    <!-- Script contatore visite -->
     <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
 </body>
