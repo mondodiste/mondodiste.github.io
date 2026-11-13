@@ -151,7 +151,7 @@
     </main>
 
     <footer>
-        &copy; 2026 Il Mondo di Ste &mdash; Visite: <span id="busuanzi_value_site_pv">...</span>
+    &copy; 2026 Il Mondo di Ste &mdash; Visite: <span id="visit-count">...</span>
     </footer>
 
     <div id="lightbox" class="lightbox" onclick="closeLightbox()">
@@ -203,9 +203,17 @@
                 }
             });
         }
-    </script>
-
-    <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+        <script>
+        fetch('https://api.countapi.xyz/hit/ilmondodiste.github.io/visits')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('visit-count').innerText = data.value;
+        })
+        .catch(err => {
+            console.error('Errore contatore:', err);
+            document.getElementById('visit-count').innerText = 'N/D';
+        });
+        </script>
 
 </body>
 </html>
