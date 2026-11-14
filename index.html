@@ -54,7 +54,6 @@
         nav a:hover, nav a.active {
             color: #ffffff;
         }
-        /* Pulsante Contatti separato e stilizzato */
         .nav-contact {
             border: 1px solid #333;
             border-radius: 4px;
@@ -134,7 +133,7 @@
             text-transform: uppercase;
         }
 
-        /* Lightbox ottimizzato con download */
+        /* Lightbox con overlay integrato sull'immagine */
         .lightbox {
             display: none;
             position: fixed;
@@ -146,40 +145,60 @@
             background-color: rgba(0, 0, 0, 0.96);
             justify-content: center;
             align-items: center;
-            flex-direction: column;
             padding: 20px;
         }
         .lightbox-content {
-            display: flex;
+            position: relative;
+            display: inline-flex;
             flex-direction: column;
-            align-items: center;
-            max-width: 90vw;
-            max-height: 85vh;
+            max-width: 95vw;
+            max-height: 92vh;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
         }
         .lightbox img {
-            max-width: 100%;
-            max-height: 72vh;
+            max-width: 95vw;
+            max-height: 92vh;
             object-fit: contain;
-            border-radius: 6px;
+            display: block;
+        }
+        .lightbox-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 25px 25px 20px 25px;
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 70%, transparent 100%);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+        .lightbox-title {
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.8);
         }
         .download-btn {
-            margin-top: 18px;
-            background-color: transparent;
-            border: 1px solid #444;
-            color: #ccc;
-            padding: 8px 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            padding: 8px 16px;
             font-size: 0.75rem;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 1.5px;
             border-radius: 4px;
             text-decoration: none;
+            backdrop-filter: blur(4px);
             transition: all 0.3s ease;
-            cursor: pointer;
+            white-space: nowrap;
         }
         .download-btn:hover {
+            background-color: rgba(255, 255, 255, 0.25);
             border-color: #fff;
-            background-color: rgba(255, 255, 255, 0.05);
-            color: #fff;
         }
 
         /* Stili Modale Contatti */
@@ -310,11 +329,14 @@
         &copy; 2026 Il Mondo di Ste
     </footer>
 
-    <!-- Lightbox con pulsante Download Sfondo -->
+    <!-- Lightbox con overlay integrato -->
     <div id="lightbox" class="lightbox" onclick="closeLightbox()">
         <div class="lightbox-content" onclick="event.stopPropagation()">
             <img id="lightbox-img" src="" alt="Foto ingrandita">
-            <a id="lightbox-download" href="" download class="download-btn">Scarica Sfondo</a>
+            <div class="lightbox-overlay">
+                <span id="lightbox-title" class="lightbox-title"></span>
+                <a id="lightbox-download" href="" download class="download-btn">Scarica Sfondo</a>
+            </div>
         </div>
     </div>
 
@@ -343,7 +365,6 @@
     </div>
 
     <script>
-        // Caricamento dinamico delle foto da foto.json
         fetch('foto.json')
             .then(response => response.json())
             .then(data => {
@@ -368,12 +389,13 @@
 
         function openLightbox(src, title) {
             const img = document.getElementById('lightbox-img');
+            const titleSpan = document.getElementById('lightbox-title');
             const downloadBtn = document.getElementById('lightbox-download');
             
             img.src = src;
+            titleSpan.textContent = title;
             downloadBtn.href = src;
             
-            // Suggerisce un nome file pulito per il download basato sul titolo
             const safeName = title ? title.toLowerCase().replace(/[^a-z0-9]/g, '_') + '.jpg' : 'sfondo_ste.jpg';
             downloadBtn.setAttribute('download', safeName);
 
@@ -399,7 +421,6 @@
             });
         }
 
-        // Gestione Modale Contatti
         function openContactModal() {
             document.getElementById('contact-modal').style.display = 'flex';
             document.getElementById('form-status').textContent = '';
@@ -415,7 +436,6 @@
             }
         }
 
-        // Invio asincrono tramite Formspree
         const form = document.getElementById('contact-form');
         form.addEventListener('submit', async function(event) {
             event.preventDefault();
@@ -427,34 +447,4 @@
             btn.textContent = 'Invio in corso...';
 
             try {
-                const response = await fetch(event.target.action, {
-                    method: form.method,
-                    body: data,
-                    headers: {
-                        'Accept': 'application/json'
-                    }
-                });
-
-                if (response.ok) {
-                    status.style.color = '#a3d9a5';
-                    status.textContent = 'Messaggio inviato! Ti risponderò presto.';
-                    form.reset();
-                    setTimeout(() => {
-                        closeContactModal();
-                    }, 2000);
-                } else {
-                    status.style.color = '#ff8a80';
-                    status.textContent = 'Qualcosa è andato storto. Riprova tra poco.';
-                }
-            } catch (error) {
-                status.style.color = '#ff8a80';
-                status.textContent = 'Errore di connessione. Riprova.';
-            } finally {
-                btn.disabled = false;
-                btn.textContent = 'Invia Messaggio';
-            }
-        });
-    </script>
-
-</body>
-</html>
+                const response = await fetch(
